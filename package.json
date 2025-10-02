@@ -1,0 +1,15 @@
+{
+  "name": "stock-bro-data",
+  "version": "1.0.0",
+  "description": "주식형님 공개 데이터 저장소",
+  "private": true,
+  "scripts": {
+    "fetch": "ts-node scripts/fetch-krx-stocks.ts",
+    "update": "pnpm fetch && git add stocks/kr_stocks.json && git commit -m 'Update stock data' && git push"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

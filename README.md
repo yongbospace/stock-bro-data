@@ -40,13 +40,18 @@ stock-bro-data/
 
 ## 🔄 데이터 업데이트
 
+### 설치
 ```bash
-cd scripts
-python3 fetch_krx_stocks.py
-cp stocks.json ../stocks/kr_stocks.json
-git add .
-git commit -m "Update stock data"
-git push
+pnpm install
+```
+
+### 종목 데이터 업데이트
+```bash
+# 데이터 가져오기만
+pnpm fetch
+
+# 데이터 가져오기 + Git commit + push
+pnpm update
 ```
 
 ## 📜 라이선스
