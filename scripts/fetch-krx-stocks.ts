@@ -53,7 +53,7 @@ async function fetchKRXStocks() {
     });
 
     if (kospiResponse.ok) {
-      const data: KRXResponse = await kospiResponse.json();
+      const data = await kospiResponse.json() as KRXResponse;
       if (data.OutBlock_1) {
         for (const item of data.OutBlock_1) {
           if (item.ISU_SRT_CD && item.ISU_ABBRV) {
@@ -83,7 +83,67 @@ async function fetchKRXStocks() {
     });
 
     if (kosdaqResponse.ok) {
-      const data: KRXResponse = await kosdaqResponse.json();
+      const data = await kosdaqResponse.json() as KRXResponse;
+      if (data.OutBlock_1) {
+        for (const item of data.OutBlock_1) {
+          if (item.ISU_SRT_CD && item.ISU_ABBRV) {
+            stocks.push({
+              code: item.ISU_SRT_CD,
+              name: item.ISU_ABBRV,
+              market: 'KOSDAQ',
+            });
+          }
+        }
+      }
+    }
+
+    // ETF 조회 (KOSPI)
+    console.log('Fetching KOSPI ETFs...');
+    const etfKospiParams = new URLSearchParams({
+      bld: 'dbms/MDC/STAT/standard/MDCSTAT04601',
+      mktId: 'STK',
+      share: '1',
+      csvxls_isNo: 'false',
+    });
+
+    const etfKospiResponse = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: etfKospiParams,
+    });
+
+    if (etfKospiResponse.ok) {
+      const data = await etfKospiResponse.json() as KRXResponse;
+      if (data.OutBlock_1) {
+        for (const item of data.OutBlock_1) {
+          if (item.ISU_SRT_CD && item.ISU_ABBRV) {
+            stocks.push({
+              code: item.ISU_SRT_CD,
+              name: item.ISU_ABBRV,
+              market: 'KOSPI',
+            });
+          }
+        }
+      }
+    }
+
+    // ETF 조회 (KOSDAQ)
+    console.log('Fetching KOSDAQ ETFs...');
+    const etfKosdaqParams = new URLSearchParams({
+      bld: 'dbms/MDC/STAT/standard/MDCSTAT04601',
+      mktId: 'KSQ',
+      share: '1',
+      csvxls_isNo: 'false',
+    });
+
+    const etfKosdaqResponse = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: etfKosdaqParams,
+    });
+
+    if (etfKosdaqResponse.ok) {
+      const data = await etfKosdaqResponse.json() as KRXResponse;
       if (data.OutBlock_1) {
         for (const item of data.OutBlock_1) {
           if (item.ISU_SRT_CD && item.ISU_ABBRV) {
