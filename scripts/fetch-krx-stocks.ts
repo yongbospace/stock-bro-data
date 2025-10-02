@@ -23,6 +23,10 @@ interface KRXResponse {
     ISU_SRT_CD?: string;
     ISU_ABBRV?: string;
   }>;
+  output?: Array<{
+    ISU_SRT_CD?: string;
+    ISU_ABBRV?: string;
+  }>;
 }
 
 async function fetchKRXStocks() {
@@ -97,64 +101,36 @@ async function fetchKRXStocks() {
       }
     }
 
-    // ETF 조회 (KOSPI)
-    console.log('Fetching KOSPI ETFs...');
-    const etfKospiParams = new URLSearchParams({
+    // ETF 조회 (전체)
+    console.log('Fetching ETFs...');
+    const etfParams = new URLSearchParams({
       bld: 'dbms/MDC/STAT/standard/MDCSTAT04601',
-      mktId: 'STK',
+      mktId: 'ALL',
       share: '1',
       csvxls_isNo: 'false',
     });
 
-    const etfKospiResponse = await fetch(url, {
+    const etfResponse = await fetch(url, {
       method: 'POST',
       headers,
-      body: etfKospiParams,
+      body: etfParams,
     });
 
-    if (etfKospiResponse.ok) {
-      const data = await etfKospiResponse.json() as KRXResponse;
-      if (data.OutBlock_1) {
-        for (const item of data.OutBlock_1) {
-          if (item.ISU_SRT_CD && item.ISU_ABBRV) {
-            stocks.push({
-              code: item.ISU_SRT_CD,
-              name: item.ISU_ABBRV,
-              market: 'KOSPI',
-            });
-          }
+    if (etfResponse.ok) {
+      const data = await etfResponse.json() as KRXResponse;
+      // ETF는 output 필드를 사용
+      const etfData = data.output || [];
+      for (const item of etfData) {
+        if (item.ISU_SRT_CD && item.ISU_ABBRV) {
+          // ETF는 대부분 KOSPI 상장
+          stocks.push({
+            code: item.ISU_SRT_CD,
+            name: item.ISU_ABBRV,
+            market: 'KOSPI',
+          });
         }
       }
-    }
-
-    // ETF 조회 (KOSDAQ)
-    console.log('Fetching KOSDAQ ETFs...');
-    const etfKosdaqParams = new URLSearchParams({
-      bld: 'dbms/MDC/STAT/standard/MDCSTAT04601',
-      mktId: 'KSQ',
-      share: '1',
-      csvxls_isNo: 'false',
-    });
-
-    const etfKosdaqResponse = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: etfKosdaqParams,
-    });
-
-    if (etfKosdaqResponse.ok) {
-      const data = await etfKosdaqResponse.json() as KRXResponse;
-      if (data.OutBlock_1) {
-        for (const item of data.OutBlock_1) {
-          if (item.ISU_SRT_CD && item.ISU_ABBRV) {
-            stocks.push({
-              code: item.ISU_SRT_CD,
-              name: item.ISU_ABBRV,
-              market: 'KOSDAQ',
-            });
-          }
-        }
-      }
+      console.log(`ETFs fetched: ${etfData.length}`);
     }
 
     console.log(`Total stocks fetched: ${stocks.length}`);
