@@ -63,3 +63,6 @@ pnpm update
 - 본 데이터는 정보 제공 목적으로만 사용됩니다
 - 투자 판단의 책임은 사용자에게 있습니다
 - 데이터의 정확성을 보장하지 않습니다
+
+## policy
+https://raw.githubusercontent.com/yongbospace/stock-bro-data/main/policy.md
